@@ -37,6 +37,12 @@ cp .env.example .env
 Open the new `.env` file and set `SESSION_SECRET` to any long random string
 (this just keeps admin logins secure — mash your keyboard for 40+ characters).
 
+> **No shell/console access on your host?** (e.g. Render's free tier) —
+> instead of step 2 above, set two environment variables in your host's
+> dashboard: `ADMIN_USERNAME` and `ADMIN_PASSWORD` (8+ characters). The app
+> creates that admin account automatically the first time it starts up. See
+> the Render walkthrough in Section 3 below.
+
 ```bash
 # 4. Start the site
 npm start
@@ -84,14 +90,25 @@ here are the simplest options:
 1. Push this project to a GitHub repository.
 2. Create a new "Web Service" and connect the repo.
 3. Set the build command to `npm install` and the start command to `npm start`.
-4. Add environment variables `SESSION_SECRET` and `NODE_ENV=production` in the
-   host's dashboard (do **not** upload your local `.env` file).
-5. After the first deploy, use the host's "Shell" or "Console" tab to run
-   `npm run setup` once, to create your admin login.
-6. Important: on these platforms the filesystem often resets on redeploy, so
-   for anything beyond a quick trial, ask your host about a persistent disk
-   /volume and mount it at the `data/` and `uploads/` folders so your content
-   and photos aren't lost when the app restarts.
+4. Add these environment variables in the host's dashboard (do **not** upload
+   your local `.env` file):
+   - `SESSION_SECRET` — any long random string
+   - `NODE_ENV` — `production`
+   - `ADMIN_USERNAME` — the username you want to log in with
+   - `ADMIN_PASSWORD` — a password, 8+ characters
+5. Deploy. The app creates your admin account automatically on first startup
+   using the `ADMIN_USERNAME` / `ADMIN_PASSWORD` you set — no shell or console
+   access needed (useful since Shell access is a paid-plan feature on Render).
+6. Important — **free tier storage is not permanent.** On Render/Railway free
+   tiers, the filesystem resets whenever the service restarts or redeploys —
+   any photos or content added through `/admin` can be lost, and the login
+   will reset back to whatever `ADMIN_USERNAME`/`ADMIN_PASSWORD` are set to
+   in your environment variables (so if you change your password from inside
+   the admin panel, update these two variables to match, or the next restart
+   will revert it). Treat the free tier as a demo/preview. For a site the
+   public will rely on, upgrade to a plan with a **persistent disk** (a few
+   dollars/month) and mount it at the `data/` and `uploads/` folders so your
+   content and photos stick around permanently.
 
 ### Option B — A VPS (DigitalOcean, Linode, AWS Lightsail, etc.)
 1. Install Node.js on the server.

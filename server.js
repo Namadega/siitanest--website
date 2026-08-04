@@ -8,9 +8,22 @@ const requireAuth = require('./middleware/requireAuth');
 const authRoutes = require('./routes/auth');
 const publicApiRoutes = require('./routes/publicApi');
 const adminApiRoutes = require('./routes/adminApi');
+const { bootstrapFromEnv, adminExists } = require('./utils/adminStore');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// If no admin account exists yet, and ADMIN_USERNAME/ADMIN_PASSWORD were
+// provided as environment variables, create the account automatically.
+// This lets hosts without shell/console access (e.g. Render's free tier)
+// get an admin login without running `npm run setup` by hand.
+bootstrapFromEnv();
+if (!adminExists()) {
+  console.warn(
+    'No admin account exists yet. Run "npm run setup", or set ADMIN_USERNAME ' +
+    'and ADMIN_PASSWORD environment variables and restart, to create one.'
+  );
+}
 
 // Ensure upload directories exist even on a fresh clone.
 ['gallery', 'stories', 'news', 'programs', 'misc'].forEach((folder) => {
