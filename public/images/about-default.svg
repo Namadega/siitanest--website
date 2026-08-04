@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 700">
+  <rect width="800" height="700" fill="#e9e2cf"/>
+  <rect x="40" y="40" width="720" height="620" fill="none" stroke="#1f3d2b" stroke-width="2" stroke-dasharray="10 8"/>
+  <text x="400" y="360" font-family="Georgia, serif" font-size="26" fill="#1f3d2b" text-anchor="middle">
+    Add an "About Us" photo
+  </text>
+  <text x="400" y="395" font-family="Georgia, serif" font-size="18" fill="#5a5142" text-anchor="middle">
+    from the admin panel
+  </text>
+</svg>

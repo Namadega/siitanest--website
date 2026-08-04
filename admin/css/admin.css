@@ -1,0 +1,170 @@
+:root {
+  --green-900: #12271a;
+  --green-800: #1f3d2b;
+  --green-700: #2a5039;
+  --gold-500: #e8b93a;
+  --gold-600: #d9a51f;
+  --cream-100: #faf7ef;
+  --ink-900: #1b1b18;
+  --ink-600: #57534a;
+  --border: #e5e0d3;
+  --danger: #c0392b;
+  --radius: 8px;
+  --shadow: 0 8px 24px rgba(18,39,26,0.08);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color: var(--ink-900);
+  background: var(--cream-100);
+}
+.muted { color: var(--ink-600); font-size: 13px; }
+a { color: var(--green-700); }
+
+/* Login */
+.login-body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--green-900); }
+.login-card {
+  background: var(--cream-100);
+  padding: 40px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+}
+.login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.login-brand img { width: 36px; height: 36px; }
+.login-card h1 { font-size: 22px; margin: 0 0 6px; }
+.login-card label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 6px; }
+.login-card input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
+.error-msg { background: #fdecea; color: var(--danger); padding: 10px 12px; border-radius: 6px; font-size: 13px; margin-top: 14px; }
+
+/* Dashboard shell */
+.admin-shell { display: flex; min-height: 100vh; }
+.sidebar {
+  width: 230px;
+  background: var(--green-900);
+  color: white;
+  flex-shrink: 0;
+  padding: 22px 14px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 20px; }
+.sidebar-brand img { width: 30px; height: 30px; }
+.sidebar-brand strong { font-size: 15px; }
+.sidebar nav a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  color: rgba(255,255,255,0.78);
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+.sidebar nav a:hover { background: rgba(255,255,255,0.08); }
+.sidebar nav a.active { background: var(--gold-500); color: var(--green-900); font-weight: 700; }
+.sidebar-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.14); }
+.sidebar-footer button {
+  width: 100%;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.sidebar-footer button:hover { background: rgba(255,255,255,0.1); }
+
+.main {
+  flex: 1;
+  padding: 30px 36px 60px;
+  max-width: 980px;
+}
+.panel { display: none; }
+.panel.active { display: block; }
+.panel-head { margin-bottom: 22px; }
+.panel-head h2 { margin: 0 0 4px; font-size: 22px; }
+
+.card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 20px; box-shadow: var(--shadow); }
+.card h3 { margin: 0 0 16px; font-size: 16px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid.single { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field.full { grid-column: 1 / -1; }
+.field label { font-size: 13px; font-weight: 600; }
+.field input, .field textarea, .field select {
+  padding: 9px 11px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+.field textarea { resize: vertical; min-height: 70px; }
+
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 6px; border: none; font-size: 14px; font-weight: 600; cursor: pointer; }
+.btn-primary { background: var(--green-700); color: white; }
+.btn-primary:hover { background: var(--green-800); }
+.btn-secondary { background: #eee; color: var(--ink-900); }
+.btn-secondary:hover { background: #e2e2e2; }
+.btn-danger { background: #fdecea; color: var(--danger); }
+.btn-danger:hover { background: #f9d7d3; }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.actions-row { display: flex; gap: 10px; margin-top: 16px; }
+
+/* Image upload widget */
+.image-upload { display: flex; align-items: center; gap: 14px; }
+.image-upload .preview {
+  width: 90px; height: 90px;
+  border-radius: 8px;
+  background: #f2ede0 center/cover no-repeat;
+  border: 1px dashed var(--border);
+  flex-shrink: 0;
+}
+.image-upload input[type=file] { font-size: 13px; }
+.upload-status { font-size: 12px; color: var(--ink-600); }
+
+/* Item list (gallery/stories/news/programs) */
+.item-list { display: flex; flex-direction: column; gap: 12px; }
+.item-row {
+  display: flex; align-items: center; gap: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.item-row img.thumb { width: 56px; height: 56px; object-fit: cover; border-radius: 6px; background: #f2ede0; flex-shrink: 0; }
+.item-row .info { flex: 1; min-width: 0; }
+.item-row .info strong { display: block; font-size: 14px; }
+.item-row .info span { font-size: 12px; color: var(--ink-600); }
+.item-row .row-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge.published { background: #e3f3e5; color: #1f7a34; }
+.badge.draft { background: #f2f2f2; color: #777; }
+
+.toast {
+  position: fixed; bottom: 24px; right: 24px;
+  background: var(--green-900); color: white;
+  padding: 12px 18px; border-radius: 8px;
+  font-size: 14px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  z-index: 100;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: var(--danger); }
+
+.empty-state { text-align: center; color: var(--ink-600); font-size: 14px; padding: 24px; border: 1px dashed var(--border); border-radius: 8px; }
+
+@media (max-width: 860px) {
+  .admin-shell { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: static; }
+  .form-grid { grid-template-columns: 1fr; }
+}

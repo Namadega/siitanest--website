@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Siitanest</title>
+<link rel="stylesheet" href="/admin/css/admin.css">
+</head>
+<body>
+<div class="admin-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <img src="/images/logo.svg" alt="">
+      <strong>Siitanest Admin</strong>
+    </div>
+    <nav id="side-nav">
+      <a href="#settings" data-panel="settings" class="active">&#9881;&#65039; Site &amp; Contact Info</a>
+      <a href="#stats" data-panel="stats">&#128202; Impact Stats</a>
+      <a href="#programs" data-panel="programs">&#128218; Programs</a>
+      <a href="#gallery" data-panel="gallery">&#128247; Gallery</a>
+      <a href="#stories" data-panel="stories">&#128172; Stories</a>
+      <a href="#news" data-panel="news">&#128240; News &amp; Activities</a>
+      <a href="#account" data-panel="account">&#128274; Account</a>
+      <a href="/" target="_blank">&#8599; View live site</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="logout-btn">Log out</button>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- SETTINGS -->
+    <section class="panel active" id="panel-settings">
+      <div class="panel-head">
+        <h2>Site &amp; Contact Info</h2>
+        <p class="muted">This information appears across the whole website — header, hero banner, about section, and footer.</p>
+      </div>
+
+      <div class="card">
+        <h3>Organization &amp; Hero Banner</h3>
+        <div class="form-grid">
+          <div class="field"><label>Organization name</label><input id="s-orgName"></div>
+          <div class="field"><label>Tagline</label><input id="s-orgTagline"></div>
+          <div class="field full"><label>Short hero line (italic, under the name)</label><input id="s-heroHeadline"></div>
+          <div class="field full"><label>Hero description paragraph</label><textarea id="s-heroSubtext"></textarea></div>
+          <div class="field full">
+            <label>Hero background photo</label>
+            <div class="image-upload">
+              <div class="preview" id="s-heroImage-preview"></div>
+              <div>
+                <input type="file" accept="image/*" id="s-heroImage-file">
+                <div class="upload-status" id="s-heroImage-status"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>About Section</h3>
+        <div class="form-grid">
+          <div class="field"><label>About heading</label><input id="s-aboutTitle"></div>
+          <div class="field full"><label>About paragraph</label><textarea id="s-aboutText"></textarea></div>
+          <div class="field full">
+            <label>About photo</label>
+            <div class="image-upload">
+              <div class="preview" id="s-aboutImage-preview"></div>
+              <div>
+                <input type="file" accept="image/*" id="s-aboutImage-file">
+                <div class="upload-status" id="s-aboutImage-status"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Mission &amp; Vision</h3>
+        <p class="muted" style="margin-top:-8px; margin-bottom:14px;">Shown as a section right after "About Us" on the homepage.</p>
+        <div class="form-grid">
+          <div class="field full"><label>Mission statement</label><textarea id="s-missionText"></textarea></div>
+          <div class="field full"><label>Vision statement</label><textarea id="s-visionText"></textarea></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Contact Details</h3>
+        <div class="form-grid">
+          <div class="field full"><label>Address</label><input id="s-address"></div>
+          <div class="field"><label>Phone</label><input id="s-phone"></div>
+          <div class="field"><label>Email</label><input id="s-email"></div>
+          <div class="field"><label>Donate button link</label><input id="s-donateUrl" placeholder="https://... or #donate"></div>
+          <div class="field"><label>Footer tagline</label><input id="s-footerNote"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Social Media Handles</h3>
+        <p class="muted" style="margin-top:-8px; margin-bottom:14px;">Paste the full link to each profile. Leave blank to hide an icon from the footer.</p>
+        <div class="form-grid">
+          <div class="field"><label>Facebook</label><input id="s-social-facebook" placeholder="https://facebook.com/..."></div>
+          <div class="field"><label>Instagram</label><input id="s-social-instagram" placeholder="https://instagram.com/..."></div>
+          <div class="field"><label>Twitter / X</label><input id="s-social-twitter" placeholder="https://x.com/..."></div>
+          <div class="field"><label>YouTube</label><input id="s-social-youtube" placeholder="https://youtube.com/..."></div>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button class="btn btn-primary" id="settings-save">Save all changes</button>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="panel" id="panel-stats">
+      <div class="panel-head">
+        <h2>Impact Stats</h2>
+        <p class="muted">The four counters shown under the hero banner (e.g. "1,250+ Children Supported").</p>
+      </div>
+      <div class="card">
+        <div id="stats-list" class="form-grid"></div>
+      </div>
+      <div class="actions-row">
+        <button class="btn btn-primary" id="stats-save">Save stats</button>
+      </div>
+    </section>
+
+    <!-- PROGRAMS -->
+    <section class="panel" id="panel-programs">
+      <div class="panel-head">
+        <h2>Programs</h2>
+        <p class="muted">The Education / Nutrition / Shelter / Healthcare cards.</p>
+      </div>
+      <div class="card">
+        <h3>Add or edit a program</h3>
+        <form id="program-form" class="form-grid">
+          <input type="hidden" id="program-id">
+          <div class="field"><label>Title</label><input id="program-title" required></div>
+          <div class="field">
+            <label>Accent color</label>
+            <select id="program-color"><option value="green">Green</option><option value="gold">Gold</option><option value="blue">Blue</option></select>
+          </div>
+          <div class="field full"><label>Bullet points (one per line)</label><textarea id="program-bullets" placeholder="School fees&#10;Uniforms&#10;Books & supplies"></textarea></div>
+          <div class="actions-row full" style="grid-column:1/-1;">
+            <button type="submit" class="btn btn-primary">Save program</button>
+            <button type="button" class="btn btn-secondary" id="program-cancel">Clear form</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>Existing programs</h3>
+        <div id="programs-list" class="item-list"></div>
+      </div>
+    </section>
+
+    <!-- GALLERY -->
+    <section class="panel" id="panel-gallery">
+      <div class="panel-head">
+        <h2>Gallery</h2>
+        <p class="muted">Photos shown in the homepage gallery grid.</p>
+      </div>
+      <div class="card">
+        <h3>Add a photo</h3>
+        <div class="image-upload">
+          <div class="preview" id="gallery-upload-preview"></div>
+          <div>
+            <input type="file" accept="image/*" id="gallery-upload-file">
+            <div class="upload-status" id="gallery-upload-status"></div>
+          </div>
+        </div>
+        <div class="field full" style="margin-top:14px;">
+          <label>Caption (optional)</label>
+          <input id="gallery-caption" placeholder="e.g. Classroom time">
+        </div>
+        <div class="actions-row"><button class="btn btn-primary" id="gallery-add">Add to gallery</button></div>
+      </div>
+      <div class="card">
+        <h3>Current photos</h3>
+        <div id="gallery-list" class="item-list"></div>
+      </div>
+    </section>
+
+    <!-- STORIES -->
+    <section class="panel" id="panel-stories">
+      <div class="panel-head">
+        <h2>Stories</h2>
+        <p class="muted">Personal stories of hope, like the featured quote on the homepage.</p>
+      </div>
+      <div class="card">
+        <h3>Add or edit a story</h3>
+        <form id="story-form" class="form-grid">
+          <input type="hidden" id="story-id">
+          <div class="field"><label>Name</label><input id="story-name" required></div>
+          <div class="field"><label>Age (optional)</label><input id="story-age"></div>
+          <div class="field full"><label>Short quote (shown on homepage)</label><textarea id="story-quote" required></textarea></div>
+          <div class="field full"><label>Full story (optional, longer version)</label><textarea id="story-full"></textarea></div>
+          <div class="field full">
+            <label>Photo</label>
+            <div class="image-upload">
+              <div class="preview" id="story-image-preview"></div>
+              <div>
+                <input type="file" accept="image/*" id="story-image-file">
+                <div class="upload-status" id="story-image-status"></div>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Visibility</label>
+            <select id="story-published"><option value="true">Published (visible on site)</option><option value="false">Draft (hidden)</option></select>
+          </div>
+          <div class="actions-row" style="grid-column:1/-1;">
+            <button type="submit" class="btn btn-primary">Save story</button>
+            <button type="button" class="btn btn-secondary" id="story-cancel">Clear form</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>All stories</h3>
+        <div id="stories-list" class="item-list"></div>
+      </div>
+    </section>
+
+    <!-- NEWS -->
+    <section class="panel" id="panel-news">
+      <div class="panel-head">
+        <h2>News &amp; Activities</h2>
+        <p class="muted">Recent activities and updates, shown in the "Latest News" section.</p>
+      </div>
+      <div class="card">
+        <h3>Add or edit a news item</h3>
+        <form id="news-form" class="form-grid">
+          <input type="hidden" id="news-id">
+          <div class="field full"><label>Title</label><input id="news-title" required></div>
+          <div class="field full"><label>Short excerpt</label><textarea id="news-excerpt"></textarea></div>
+          <div class="field"><label>Date</label><input type="date" id="news-date"></div>
+          <div class="field full">
+            <label>Photo</label>
+            <div class="image-upload">
+              <div class="preview" id="news-image-preview"></div>
+              <div>
+                <input type="file" accept="image/*" id="news-image-file">
+                <div class="upload-status" id="news-image-status"></div>
+              </div>
+            </div>
+          </div>
+          <div class="actions-row" style="grid-column:1/-1;">
+            <button type="submit" class="btn btn-primary">Save news item</button>
+            <button type="button" class="btn btn-secondary" id="news-cancel">Clear form</button>
+          </div>
+        </form>
+      </div>
+      <div class="card">
+        <h3>All news items</h3>
+        <div id="news-list" class="item-list"></div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT -->
+    <section class="panel" id="panel-account">
+      <div class="panel-head">
+        <h2>Account</h2>
+        <p class="muted">Signed in as <strong id="account-username">—</strong></p>
+      </div>
+      <div class="card">
+        <h3>Change password</h3>
+        <div class="form-grid">
+          <div class="field"><label>Current password</label><input type="password" id="acc-current"></div>
+          <div class="field"><label>New password (min 8 characters)</label><input type="password" id="acc-new"></div>
+        </div>
+        <div class="actions-row"><button class="btn btn-primary" id="acc-save">Update password</button></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="/admin/js/admin.js"></script>
+</body>
+</html>

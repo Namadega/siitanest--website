@@ -1,0 +1,84 @@
+{
+  "settings": {
+    "orgName": "Siitanest",
+    "orgTagline": "Mother's Love Home",
+    "heroHeadline": "Giving every child a chance to dream again.",
+    "heroSubtext": "We provide education, safe shelter, nutritious meals, healthcare, and family support to orphaned and vulnerable children, empowering them to build brighter futures.",
+    "heroImage": "/images/hero-default.svg",
+    "aboutTitle": "Who We Are",
+    "aboutText": "Siitanest Mother's Love Home is a nonprofit organization dedicated to caring for orphaned and vulnerable children. We provide them with love, education, food, shelter, healthcare, and emotional support in a safe and nurturing environment.",
+    "aboutImage": "/images/about-default.svg",
+    "missionText": "To provide orphaned and vulnerable children with love, education, shelter, healthcare, and the support they need to build a brighter future.",
+    "visionText": "A world where every child, regardless of their circumstances, has the chance to grow up safe, educated, and full of hope.",
+    "address": "Siitanest Mother's Love Home, Jinja, Uganda",
+    "phone": "+256 700 123 456",
+    "email": "info@siitanestmlh.org",
+    "donateUrl": "#donate",
+    "footerNote": "Giving Hope. Building Futures.",
+    "socialLinks": {
+      "facebook": "",
+      "instagram": "",
+      "twitter": "",
+      "youtube": ""
+    }
+  },
+  "stats": [
+    { "id": "stat-1", "label": "Children Supported", "value": "1,250+", "icon": "children" },
+    { "id": "stat-2", "label": "Families Assisted", "value": "320+", "icon": "family" },
+    { "id": "stat-3", "label": "School Completion Rate", "value": "85%", "icon": "graduate" },
+    { "id": "stat-4", "label": "Volunteers", "value": "180+", "icon": "hands" }
+  ],
+  "programs": [
+    {
+      "id": "prog-1",
+      "title": "Education",
+      "icon": "graduate",
+      "color": "green",
+      "summary": "School fees, uniforms, books & supplies, scholarships",
+      "bullets": ["School fees", "Uniforms", "Books & supplies", "Scholarships"],
+      "image": ""
+    },
+    {
+      "id": "prog-2",
+      "title": "Nutrition",
+      "icon": "bowl",
+      "color": "gold",
+      "summary": "Daily meals, food packages, nutrition support, clean drinking water",
+      "bullets": ["Daily meals", "Food packages", "Nutrition support", "Clean drinking water"],
+      "image": ""
+    },
+    {
+      "id": "prog-3",
+      "title": "Shelter",
+      "icon": "home",
+      "color": "green",
+      "summary": "Safe accommodation, clothing & essentials, child protection, family support",
+      "bullets": ["Safe accommodation", "Clothing & essentials", "Child protection", "Family support"],
+      "image": ""
+    },
+    {
+      "id": "prog-4",
+      "title": "Healthcare",
+      "icon": "heart-pulse",
+      "color": "blue",
+      "summary": "Medical checkups, counseling, emergency care, health education",
+      "bullets": ["Medical checkups", "Counseling", "Emergency care", "Health education"],
+      "image": ""
+    }
+  ],
+  "gallery": [],
+  "stories": [
+    {
+      "id": "story-1",
+      "name": "Grace",
+      "age": "18",
+      "quote": "When I arrived at Siitanest Mother's Love Home, I had no hope of returning to school. Today, I am preparing for university because people believed in me.",
+      "fullStory": "When I arrived at Siitanest Mother's Love Home, I had no hope of returning to school. Today, I am preparing for university because people believed in me.",
+      "image": "",
+      "published": true,
+      "createdAt": "2026-05-01T00:00:00.000Z"
+    }
+  ],
+  "news": [],
+  "team": []
+}
