@@ -119,20 +119,22 @@ To fix this for free, connect a free MongoDB Atlas database:
 5. Paste that as the `MONGODB_URI` environment variable in Render, with your
    real username/password filled in.
 
-Once this is set, all content saved through `/admin` (mission/vision, contact
-info, photos, stories, everything) is stored in MongoDB and survives restarts
-— no paid plan required. The one thing that still needs a small paid
-persistent disk is **uploaded photos themselves** (the image files) — Atlas
-only stores text/data, not the photo files. If keeping uploaded photos
-permanently matters to you, see the persistent disk note below, or ask about
-switching photo storage to a free image host as another no-cost option.
+Once this is set, all content saved through `/admin` — mission/vision,
+contact info, stats, programs, stories, news, **and uploaded photos** — is
+stored in MongoDB and survives restarts. No paid plan required.
+
+> Note: MongoDB Atlas's free tier includes 512MB of storage — plenty for a
+> nonprofit site's text content and a large number of photos (each photo is
+> compressed to a reasonable web size before storing). If you ever outgrow
+> it, Atlas's paid tiers start very cheap.
 
 ### Option A2 — A tiny paid plan with a persistent disk
-If you'd rather not deal with a separate database, Render/Railway's paid
-plans (often just $1-7/month) let you attach a **persistent disk** and mount
-it at the `data/` and `uploads/` folders — this keeps the original simple
-local-file storage working permanently, photos included, without needing
-MongoDB at all.
+An alternative to MongoDB: Render/Railway's paid plans (often just
+$1-7/month) let you attach a **persistent disk** and mount it at the `data/`
+and `uploads/` folders — this keeps the original simple local-file storage
+working permanently without needing a database at all. Either approach
+works; MongoDB is the free option, a persistent disk is the "don't think
+about it again" option.
 
 ### Option B — A VPS (DigitalOcean, Linode, AWS Lightsail, etc.)
 1. Install Node.js on the server.

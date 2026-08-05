@@ -10,6 +10,8 @@ const publicApiRoutes = require('./routes/publicApi');
 const adminApiRoutes = require('./routes/adminApi');
 const db = require('./utils/db');
 const { bootstrapFromEnv, adminExists } = require('./utils/adminStore');
+const mongo = require('./utils/mongo');
+const imageStore = require('./utils/imageStore');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +34,22 @@ app.use(
   })
 );
 
-// Uploaded images, served publicly (this is how the frontend displays admin-added photos)
+// Uploaded images, served publicly (this is how the frontend displays admin-added photos).
+// When MongoDB is configured, images are stored there (so they survive restarts on hosts
+// with temporary disks) and served dynamically here; otherwise this falls through to the
+// plain static file server below, which reads them straight from the uploads/ folder.
+app.get('/uploads/:folder/:filename', async (req, res, next) => {
+  if (!mongo.isEnabled()) return next();
+  try {
+    const img = await imageStore.getImage(req.params.folder, req.params.filename);
+    if (!img) return next();
+    res.setHeader('Content-Type', img.contentType);
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    res.send(img.buffer);
+  } catch (err) {
+    next(err);
+  }
+});
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Public website

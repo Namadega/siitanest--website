@@ -1,21 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const path = require('path');
-const fs = require('fs');
 const crypto = require('crypto');
 const sharp = require('sharp');
 const db = require('../utils/db');
 const { upload } = require('../middleware/upload');
 const { changePassword, readAdmin } = require('../utils/adminStore');
+const imageStore = require('../utils/imageStore');
 
-const UPLOAD_ROOT = path.join(__dirname, '..', 'uploads');
 const ALLOWED_FOLDERS = new Set(['gallery', 'stories', 'news', 'programs', 'misc']);
-
-function safeUnlink(publicUrl) {
-  if (!publicUrl || !publicUrl.startsWith('/uploads/')) return;
-  const filePath = path.join(__dirname, '..', publicUrl);
-  fs.unlink(filePath, () => {}); // best-effort, ignore errors (e.g. already gone)
-}
 
 // ---------- Image upload ----------
 // POST /api/admin/upload?folder=gallery   (multipart field name: "image")
@@ -25,18 +17,16 @@ router.post('/upload', upload.single('image'), async (req, res) => {
     if (!req.file) return res.status(400).json({ error: 'No image file received.' });
 
     const filename = `${crypto.randomBytes(12).toString('hex')}.jpg`;
-    const destDir = path.join(UPLOAD_ROOT, folder);
-    fs.mkdirSync(destDir, { recursive: true });
-    const destPath = path.join(destDir, filename);
 
     // Re-encode to a reasonable web size/quality regardless of source format.
-    await sharp(req.file.buffer)
+    const buffer = await sharp(req.file.buffer)
       .rotate()
       .resize({ width: 1600, withoutEnlargement: true })
       .jpeg({ quality: 82 })
-      .toFile(destPath);
+      .toBuffer();
 
-    res.json({ url: `/uploads/${folder}/${filename}` });
+    const url = await imageStore.saveImage(folder, filename, buffer, 'image/jpeg');
+    res.json({ url });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Image upload failed. Please try a different image.' });
@@ -82,10 +72,10 @@ function registerCollection(name, { defaults = {} } = {}) {
     res.json(record.value());
   });
 
-  router.delete(`/${name}/:id`, (req, res) => {
+  router.delete(`/${name}/:id`, async (req, res) => {
     const record = db.get(name).find({ id: req.params.id }).value();
     if (!record) return res.status(404).json({ error: 'Not found' });
-    if (record.image) safeUnlink(record.image);
+    if (record.image) await imageStore.deleteImage(record.image);
     db.get(name).remove({ id: req.params.id }).write();
     res.json({ ok: true });
   });
