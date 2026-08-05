@@ -96,19 +96,43 @@ here are the simplest options:
    - `NODE_ENV` — `production`
    - `ADMIN_USERNAME` — the username you want to log in with
    - `ADMIN_PASSWORD` — a password, 8+ characters
+   - `MONGODB_URI` — see below (needed for content to actually stay saved)
 5. Deploy. The app creates your admin account automatically on first startup
    using the `ADMIN_USERNAME` / `ADMIN_PASSWORD` you set — no shell or console
    access needed (useful since Shell access is a paid-plan feature on Render).
-6. Important — **free tier storage is not permanent.** On Render/Railway free
-   tiers, the filesystem resets whenever the service restarts or redeploys —
-   any photos or content added through `/admin` can be lost, and the login
-   will reset back to whatever `ADMIN_USERNAME`/`ADMIN_PASSWORD` are set to
-   in your environment variables (so if you change your password from inside
-   the admin panel, update these two variables to match, or the next restart
-   will revert it). Treat the free tier as a demo/preview. For a site the
-   public will rely on, upgrade to a plan with a **persistent disk** (a few
-   dollars/month) and mount it at the `data/` and `uploads/` folders so your
-   content and photos stick around permanently.
+
+**Why `MONGODB_URI` matters:** Render and Railway's free tiers use a
+*temporary* filesystem — it resets whenever the service restarts or
+redeploys, which happens often on the free tier (e.g. after 15 minutes with
+no visitors). Without a database, any content you add through `/admin` would
+disappear on the next restart.
+
+To fix this for free, connect a free MongoDB Atlas database:
+1. Go to **mongodb.com/cloud/atlas**, create a free account, and create a
+   free (M0) cluster — takes about 5 minutes.
+2. In Atlas, create a database user (username + password) under
+   **Database Access**.
+3. Under **Network Access**, add `0.0.0.0/0` (allow access from anywhere) so
+   Render can reach it.
+4. Click **Connect** on your cluster → **Drivers** → copy the connection
+   string (looks like `mongodb+srv://user:password@cluster.mongodb.net/`).
+5. Paste that as the `MONGODB_URI` environment variable in Render, with your
+   real username/password filled in.
+
+Once this is set, all content saved through `/admin` (mission/vision, contact
+info, photos, stories, everything) is stored in MongoDB and survives restarts
+— no paid plan required. The one thing that still needs a small paid
+persistent disk is **uploaded photos themselves** (the image files) — Atlas
+only stores text/data, not the photo files. If keeping uploaded photos
+permanently matters to you, see the persistent disk note below, or ask about
+switching photo storage to a free image host as another no-cost option.
+
+### Option A2 — A tiny paid plan with a persistent disk
+If you'd rather not deal with a separate database, Render/Railway's paid
+plans (often just $1-7/month) let you attach a **persistent disk** and mount
+it at the `data/` and `uploads/` folders — this keeps the original simple
+local-file storage working permanently, photos included, without needing
+MongoDB at all.
 
 ### Option B — A VPS (DigitalOcean, Linode, AWS Lightsail, etc.)
 1. Install Node.js on the server.

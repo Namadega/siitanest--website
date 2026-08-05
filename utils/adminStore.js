@@ -1,38 +1,61 @@
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcryptjs');
+const mongo = require('./mongo');
 
 const ADMIN_PATH = path.join(__dirname, '..', 'data', 'admin.json');
 
-function readAdmin() {
+// ---------- Local file mode (default for local development) ----------
+function readAdminFromFile() {
   if (!fs.existsSync(ADMIN_PATH)) return null;
   return JSON.parse(fs.readFileSync(ADMIN_PATH, 'utf-8'));
 }
-
-function writeAdmin(username, plainPassword) {
-  const passwordHash = bcrypt.hashSync(plainPassword, 10);
-  fs.writeFileSync(
-    ADMIN_PATH,
-    JSON.stringify({ username, passwordHash }, null, 2)
-  );
+function writeAdminToFile(username, passwordHash) {
+  fs.writeFileSync(ADMIN_PATH, JSON.stringify({ username, passwordHash }, null, 2));
 }
 
-function verifyLogin(username, plainPassword) {
-  const admin = readAdmin();
+// ---------- Public API (used by routes) — works the same whether the ----------
+// ---------- account lives in MongoDB or in a local file. ----------
+
+async function readAdmin() {
+  if (mongo.isEnabled()) {
+    const collection = await mongo.getCollection();
+    const doc = await collection.findOne({ _id: 'admin' });
+    if (!doc) return null;
+    return { username: doc.username, passwordHash: doc.passwordHash };
+  }
+  return readAdminFromFile();
+}
+
+async function writeAdmin(username, plainPassword) {
+  const passwordHash = bcrypt.hashSync(plainPassword, 10);
+  if (mongo.isEnabled()) {
+    const collection = await mongo.getCollection();
+    await collection.replaceOne({ _id: 'admin' }, { _id: 'admin', username, passwordHash }, { upsert: true });
+    return;
+  }
+  writeAdminToFile(username, passwordHash);
+}
+
+async function verifyLogin(username, plainPassword) {
+  const admin = await readAdmin();
   if (!admin) return false;
   if (admin.username !== username) return false;
   return bcrypt.compareSync(plainPassword, admin.passwordHash);
 }
 
-function adminExists() {
-  return fs.existsSync(ADMIN_PATH);
+async function adminExists() {
+  const admin = await readAdmin();
+  return !!admin;
 }
 
 // Allows creating the first admin account purely from environment variables,
 // for hosts (like Render's free tier) where there's no shell/console access
-// to run `npm run setup` interactively.
-function bootstrapFromEnv() {
-  if (adminExists()) return false;
+// to run `npm run setup` interactively. Only runs if no account exists yet —
+// once an account exists (whether created this way or via `npm run setup`),
+// it's left alone, including any password changed later from the admin panel.
+async function bootstrapFromEnv() {
+  if (await adminExists()) return false;
   const username = process.env.ADMIN_USERNAME;
   const password = process.env.ADMIN_PASSWORD;
   if (!username || !password) return false;
@@ -40,13 +63,13 @@ function bootstrapFromEnv() {
     console.warn('ADMIN_PASSWORD must be at least 8 characters — skipping admin bootstrap.');
     return false;
   }
-  writeAdmin(username, password);
+  await writeAdmin(username, password);
   console.log(`Admin account "${username}" created from environment variables.`);
   return true;
 }
 
-function changePassword(username, newPlainPassword) {
-  writeAdmin(username, newPlainPassword);
+async function changePassword(username, newPlainPassword) {
+  await writeAdmin(username, newPlainPassword);
 }
 
 module.exports = { readAdmin, writeAdmin, verifyLogin, adminExists, changePassword, bootstrapFromEnv };

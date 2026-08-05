@@ -8,22 +8,11 @@ const requireAuth = require('./middleware/requireAuth');
 const authRoutes = require('./routes/auth');
 const publicApiRoutes = require('./routes/publicApi');
 const adminApiRoutes = require('./routes/adminApi');
+const db = require('./utils/db');
 const { bootstrapFromEnv, adminExists } = require('./utils/adminStore');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// If no admin account exists yet, and ADMIN_USERNAME/ADMIN_PASSWORD were
-// provided as environment variables, create the account automatically.
-// This lets hosts without shell/console access (e.g. Render's free tier)
-// get an admin login without running `npm run setup` by hand.
-bootstrapFromEnv();
-if (!adminExists()) {
-  console.warn(
-    'No admin account exists yet. Run "npm run setup", or set ADMIN_USERNAME ' +
-    'and ADMIN_PASSWORD environment variables and restart, to create one.'
-  );
-}
 
 // Ensure upload directories exist even on a fresh clone.
 ['gallery', 'stories', 'news', 'programs', 'misc'].forEach((folder) => {
@@ -74,7 +63,26 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Siitanest website running at http://localhost:${PORT}`);
-  console.log(`Admin panel at http://localhost:${PORT}/admin`);
-});
+(async () => {
+  // Wait for site content to finish loading (from MongoDB if configured,
+  // otherwise this resolves immediately for local file storage) before
+  // accepting any requests.
+  await db.ready;
+
+  // If no admin account exists yet, and ADMIN_USERNAME/ADMIN_PASSWORD were
+  // provided as environment variables, create the account automatically.
+  // This lets hosts without shell/console access (e.g. Render's free tier)
+  // get an admin login without running `npm run setup` by hand.
+  await bootstrapFromEnv();
+  if (!(await adminExists())) {
+    console.warn(
+      'No admin account exists yet. Run "npm run setup", or set ADMIN_USERNAME ' +
+      'and ADMIN_PASSWORD environment variables and restart, to create one.'
+    );
+  }
+
+  app.listen(PORT, () => {
+    console.log(`Siitanest website running at http://localhost:${PORT}`);
+    console.log(`Admin panel at http://localhost:${PORT}/admin`);
+  });
+})();

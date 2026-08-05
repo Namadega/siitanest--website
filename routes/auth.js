@@ -8,22 +8,27 @@ router.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'admin', 'login.html'));
 });
 
-router.post('/login', express.json(), (req, res) => {
-  if (!adminExists()) {
-    return res.status(400).json({
-      error: 'No admin account has been set up yet. Run "npm run setup" on the server first.'
-    });
+router.post('/login', express.json(), async (req, res) => {
+  try {
+    if (!(await adminExists())) {
+      return res.status(400).json({
+        error: 'No admin account has been set up yet. Run "npm run setup" on the server first.'
+      });
+    }
+    const { username, password } = req.body || {};
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required.' });
+    }
+    if (!(await verifyLogin(username, password))) {
+      return res.status(401).json({ error: 'Incorrect username or password.' });
+    }
+    req.session.isAdmin = true;
+    req.session.username = username;
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong while logging in. Please try again.' });
   }
-  const { username, password } = req.body || {};
-  if (!username || !password) {
-    return res.status(400).json({ error: 'Username and password are required.' });
-  }
-  if (!verifyLogin(username, password)) {
-    return res.status(401).json({ error: 'Incorrect username or password.' });
-  }
-  req.session.isAdmin = true;
-  req.session.username = username;
-  res.json({ ok: true });
 });
 
 router.post('/logout', (req, res) => {

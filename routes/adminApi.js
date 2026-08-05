@@ -98,19 +98,24 @@ registerCollection('news', { defaults: { date: new Date().toISOString() } });
 registerCollection('team');
 
 // ---------- Change password ----------
-router.post('/change-password', express.json(), (req, res) => {
-  const { currentPassword, newPassword } = req.body || {};
-  const { verifyLogin } = require('../utils/adminStore');
-  const admin = readAdmin();
-  if (!admin) return res.status(400).json({ error: 'No admin account exists.' });
-  if (!verifyLogin(admin.username, currentPassword || '')) {
-    return res.status(401).json({ error: 'Current password is incorrect.' });
+router.post('/change-password', express.json(), async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body || {};
+    const { verifyLogin } = require('../utils/adminStore');
+    const admin = await readAdmin();
+    if (!admin) return res.status(400).json({ error: 'No admin account exists.' });
+    if (!(await verifyLogin(admin.username, currentPassword || ''))) {
+      return res.status(401).json({ error: 'Current password is incorrect.' });
+    }
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters.' });
+    }
+    await changePassword(admin.username, newPassword);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong while updating the password.' });
   }
-  if (!newPassword || newPassword.length < 8) {
-    return res.status(400).json({ error: 'New password must be at least 8 characters.' });
-  }
-  changePassword(admin.username, newPassword);
-  res.json({ ok: true });
 });
 
 router.get('/whoami', (req, res) => {

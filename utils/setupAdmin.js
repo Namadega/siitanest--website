@@ -2,6 +2,7 @@
  * Run with: npm run setup
  * Creates (or resets) the single admin account used to log into /admin
  */
+require('dotenv').config();
 const readline = require('readline');
 const { writeAdmin, adminExists } = require('./adminStore');
 
@@ -13,7 +14,7 @@ function ask(question) {
 
 (async () => {
   console.log('=== Siitanest Admin Setup ===');
-  if (adminExists()) {
+  if (await adminExists()) {
     const proceed = await ask('An admin account already exists. Reset it? (y/N): ');
     if (proceed.trim().toLowerCase() !== 'y') {
       console.log('Cancelled. Existing admin account left unchanged.');
@@ -29,7 +30,8 @@ function ask(question) {
     if (password.length < 8) console.log('Password too short, try again.');
   }
 
-  writeAdmin(username, password);
+  await writeAdmin(username, password);
   console.log('\nAdmin account saved. You can now log in at /admin/login with these credentials.');
   rl.close();
+  process.exit(0);
 })();
