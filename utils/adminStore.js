@@ -16,13 +16,21 @@ function writeAdminToFile(username, passwordHash) {
 
 // ---------- Public API (used by routes) — works the same whether the ----------
 // ---------- account lives in MongoDB or in a local file. ----------
+// Every MongoDB call here is wrapped so that a database problem (wrong
+// credentials, network hiccup, etc.) never crashes the server — it just
+// means the account can't be found/saved permanently until it's fixed.
 
 async function readAdmin() {
   if (mongo.isEnabled()) {
-    const collection = await mongo.getCollection();
-    const doc = await collection.findOne({ _id: 'admin' });
-    if (!doc) return null;
-    return { username: doc.username, passwordHash: doc.passwordHash };
+    try {
+      const collection = await mongo.getCollection();
+      const doc = await collection.findOne({ _id: 'admin' });
+      if (!doc) return null;
+      return { username: doc.username, passwordHash: doc.passwordHash };
+    } catch (err) {
+      console.error('Could not read admin account from MongoDB:', err.message);
+      return null;
+    }
   }
   return readAdminFromFile();
 }
@@ -30,8 +38,16 @@ async function readAdmin() {
 async function writeAdmin(username, plainPassword) {
   const passwordHash = bcrypt.hashSync(plainPassword, 10);
   if (mongo.isEnabled()) {
-    const collection = await mongo.getCollection();
-    await collection.replaceOne({ _id: 'admin' }, { _id: 'admin', username, passwordHash }, { upsert: true });
+    try {
+      const collection = await mongo.getCollection();
+      await collection.replaceOne({ _id: 'admin' }, { _id: 'admin', username, passwordHash }, { upsert: true });
+    } catch (err) {
+      console.error(
+        'Could not save admin account to MongoDB (login will still work for this session, ' +
+        'but won\'t be remembered after a restart until the database connection is fixed):',
+        err.message
+      );
+    }
     return;
   }
   writeAdminToFile(username, passwordHash);

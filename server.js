@@ -80,22 +80,35 @@ app.use((err, req, res, next) => {
   });
 });
 
-(async () => {
-  // Wait for site content to finish loading (from MongoDB if configured,
-  // otherwise this resolves immediately for local file storage) before
-  // accepting any requests.
-  await db.ready;
+// Last-resort safety net: if anything anywhere throws an unhandled promise
+// rejection (a bug, a database hiccup, etc.), log it clearly instead of
+// letting it silently crash the entire site.
+process.on('unhandledRejection', (err) => {
+  console.error('Unhandled promise rejection (server is still running):', err);
+});
 
-  // If no admin account exists yet, and ADMIN_USERNAME/ADMIN_PASSWORD were
-  // provided as environment variables, create the account automatically.
-  // This lets hosts without shell/console access (e.g. Render's free tier)
-  // get an admin login without running `npm run setup` by hand.
-  await bootstrapFromEnv();
-  if (!(await adminExists())) {
-    console.warn(
-      'No admin account exists yet. Run "npm run setup", or set ADMIN_USERNAME ' +
-      'and ADMIN_PASSWORD environment variables and restart, to create one.'
-    );
+(async () => {
+  try {
+    // Wait for site content to finish loading (from MongoDB if configured,
+    // otherwise this resolves immediately for local file storage) before
+    // accepting any requests.
+    await db.ready;
+
+    // If no admin account exists yet, and ADMIN_USERNAME/ADMIN_PASSWORD were
+    // provided as environment variables, create the account automatically.
+    // This lets hosts without shell/console access (e.g. Render's free tier)
+    // get an admin login without running `npm run setup` by hand.
+    await bootstrapFromEnv();
+    if (!(await adminExists())) {
+      console.warn(
+        'No admin account exists yet. Run "npm run setup", or set ADMIN_USERNAME ' +
+        'and ADMIN_PASSWORD environment variables and restart, to create one.'
+      );
+    }
+  } catch (err) {
+    // Startup checks (e.g. a database problem) should never take the whole
+    // site offline — log it clearly and still start the server below.
+    console.error('A startup check failed, continuing anyway:', err);
   }
 
   app.listen(PORT, () => {
