@@ -89,8 +89,17 @@ async function loadSettings() {
   $('s-address').value = s.address || '';
   $('s-phone').value = s.phone || '';
   $('s-email').value = s.email || '';
-  $('s-donateUrl').value = s.donateUrl || '';
+  $('s-donateUrl').value = s.donateUrl && s.donateUrl !== '#donate' ? s.donateUrl : '';
   $('s-footerNote').value = s.footerNote || '';
+  $('s-donateNote').value = s.donateNote || '';
+  $('s-mtnNumber').value = s.mtnNumber || '';
+  $('s-mtnName').value = s.mtnName || '';
+  $('s-airtelNumber').value = s.airtelNumber || '';
+  $('s-airtelName').value = s.airtelName || '';
+  $('s-bankName').value = s.bankName || '';
+  $('s-bankAccountName').value = s.bankAccountName || '';
+  $('s-bankAccountNumber').value = s.bankAccountNumber || '';
+  $('s-bankBranch').value = s.bankBranch || '';
   const social = s.socialLinks || {};
   $('s-social-facebook').value = social.facebook || '';
   $('s-social-instagram').value = social.instagram || '';
@@ -122,6 +131,15 @@ async function saveSettings() {
       email: $('s-email').value.trim(),
       donateUrl: $('s-donateUrl').value.trim(),
       footerNote: $('s-footerNote').value.trim(),
+      donateNote: $('s-donateNote').value.trim(),
+      mtnNumber: $('s-mtnNumber').value.trim(),
+      mtnName: $('s-mtnName').value.trim(),
+      airtelNumber: $('s-airtelNumber').value.trim(),
+      airtelName: $('s-airtelName').value.trim(),
+      bankName: $('s-bankName').value.trim(),
+      bankAccountName: $('s-bankAccountName').value.trim(),
+      bankAccountNumber: $('s-bankAccountNumber').value.trim(),
+      bankBranch: $('s-bankBranch').value.trim(),
       socialLinks: {
         facebook: $('s-social-facebook').value.trim(),
         instagram: $('s-social-instagram').value.trim(),
@@ -467,6 +485,55 @@ async function submitNewsForm(e) {
   }
 }
 
+// ---------- Inquiries ----------
+async function loadInquiries() {
+  const inquiries = await api('/api/admin/inquiries');
+  const list = $('inquiries-list');
+  const badge = $('inquiries-badge');
+  const unread = inquiries.filter((i) => !i.read).length;
+  badge.textContent = unread > 0 ? unread : '';
+
+  if (!inquiries.length) {
+    list.innerHTML = '<div class="empty-state">No messages yet. They\'ll show up here when someone submits the "Get Involved" form on your site.</div>';
+    return;
+  }
+  list.innerHTML = inquiries
+    .slice()
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .map(
+      (i) => `
+    <div class="item-row" style="align-items:flex-start;">
+      <div class="info">
+        <strong>${escapeHtml(i.name)} ${i.read ? '' : '<span class="badge draft" style="background:#fdecea;color:#c0392b;">New</span>'}</strong>
+        <span>${escapeHtml(i.type || 'General')} · ${escapeHtml(new Date(i.createdAt).toLocaleString())}</span>
+        <div style="margin-top:6px; font-size:13px;">
+          <div>&#9993; <a href="mailto:${escapeHtml(i.email)}">${escapeHtml(i.email)}</a>${i.phone ? ' &nbsp; &#128222; ' + escapeHtml(i.phone) : ''}</div>
+          <div style="margin-top:6px; white-space:pre-wrap; color:var(--ink-900);">${escapeHtml(i.message)}</div>
+        </div>
+      </div>
+      <div class="row-actions">
+        ${!i.read ? `<button class="btn btn-sm btn-secondary" data-read="${i.id}">Mark Read</button>` : ''}
+        <button class="btn btn-sm btn-danger" data-delete="${i.id}">Delete</button>
+      </div>
+    </div>`
+    )
+    .join('');
+  list.querySelectorAll('[data-read]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      await api(`/api/admin/inquiries/${btn.dataset.read}`, { method: 'PUT', body: JSON.stringify({ read: true }) });
+      loadInquiries();
+    })
+  );
+  list.querySelectorAll('[data-delete]').forEach((btn) =>
+    btn.addEventListener('click', async () => {
+      if (!confirm('Delete this message?')) return;
+      await api(`/api/admin/inquiries/${btn.dataset.delete}`, { method: 'DELETE' });
+      toast('Message deleted.');
+      loadInquiries();
+    })
+  );
+}
+
 // ---------- Account ----------
 async function loadAccount() {
   const data = await api('/api/admin/whoami');
@@ -495,6 +562,7 @@ async function saveAccountPassword() {
   loadGallery();
   loadStories();
   loadNews();
+  loadInquiries();
   loadAccount();
 
   $('settings-save').addEventListener('click', saveSettings);

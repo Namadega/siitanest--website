@@ -1,3 +1,6 @@
+// Homepage-specific rendering. Shared header/footer logic lives in chrome.js
+// (loaded before this file) — escapeHtml, formatDate, renderChrome(), etc.
+
 const ICONS = {
   children: '&#128118;',
   family: '&#128106;',
@@ -8,41 +11,14 @@ const ICONS = {
   'heart-pulse': '&#128147;'
 };
 
-const SOCIAL_ICONS = {
-  facebook: 'f',
-  instagram: '&#128247;',
-  twitter: 'X',
-  youtube: '&#9654;'
-};
-
-function escapeHtml(str) {
-  if (str == null) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function formatDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (isNaN(d)) return '';
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
 async function loadSiteData() {
   const res = await fetch('/api/site-data');
   if (!res.ok) throw new Error('Failed to load site content');
   return res.json();
 }
 
-function renderSettings(settings) {
+function renderHomepageSettings(settings) {
   if (!settings) return;
-  const orgFull = `${settings.orgName || ''}`.trim();
-  document.title = `${settings.orgName || 'Siitanest'} ${settings.orgTagline || ''}`.trim();
-
-  document.getElementById('brand-name').textContent = (settings.orgName || 'SIITANEST').toUpperCase();
-  document.getElementById('brand-sub').textContent = settings.orgTagline || '';
   document.getElementById('hero-org-name').innerHTML =
     `${escapeHtml((settings.orgName || '').toUpperCase())}<span id="hero-org-tagline">${escapeHtml((settings.orgTagline || '').toUpperCase())}</span>`;
   document.getElementById('hero-headline').textContent = settings.heroHeadline || '';
@@ -55,25 +31,6 @@ function renderSettings(settings) {
 
   document.getElementById('mission-text').textContent = settings.missionText || '';
   document.getElementById('vision-text').textContent = settings.visionText || '';
-
-  document.getElementById('footer-org-name').textContent = (settings.orgName || '').toUpperCase();
-  document.getElementById('footer-org-sub').textContent = settings.orgTagline || '';
-  document.getElementById('footer-note').textContent = settings.footerNote || '';
-  document.getElementById('footer-address').innerHTML = `&#128205; ${escapeHtml(settings.address || '')}`;
-  document.getElementById('footer-phone').innerHTML = `&#128222; ${escapeHtml(settings.phone || '')}`;
-  document.getElementById('footer-email').innerHTML = `&#9993; ${escapeHtml(settings.email || '')}`;
-  document.getElementById('footer-bottom').textContent =
-    `© ${new Date().getFullYear()} ${settings.orgName || ''} ${settings.orgTagline || ''}. All Rights Reserved.`;
-
-  const donateHref = settings.donateUrl || '#donate';
-  document.getElementById('header-donate-btn').setAttribute('href', donateHref);
-
-  const social = settings.socialLinks || {};
-  const socialRow = document.getElementById('social-row');
-  socialRow.innerHTML = Object.entries(social)
-    .filter(([, url]) => url)
-    .map(([key, url]) => `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">${SOCIAL_ICONS[key] || key[0].toUpperCase()}</a>`)
-    .join('');
 }
 
 function renderStats(stats) {
@@ -110,7 +67,7 @@ function renderPrograms(programs) {
     .join('');
 }
 
-function renderGallery(gallery) {
+function renderGalleryPreview(gallery) {
   const el = document.getElementById('gallery-grid');
   if (!gallery || !gallery.length) {
     el.innerHTML = '<p class="empty-note">Photos will appear here once added in the admin panel.</p>';
@@ -155,19 +112,14 @@ function renderNews(news) {
     .join('');
 }
 
-function renderFooterPrograms(programs) {
-  const el = document.getElementById('footer-programs');
-  if (!programs || !programs.length) { el.innerHTML = ''; return; }
-  el.innerHTML = programs.map((p) => `<li><a href="#programs">${escapeHtml(p.title)}</a></li>`).join('');
-}
-
 (async function init() {
   try {
     const data = await loadSiteData();
-    renderSettings(data.settings);
+    renderChrome(data.settings);
+    renderHomepageSettings(data.settings);
     renderStats(data.stats);
     renderPrograms(data.programs);
-    renderGallery(data.gallery);
+    renderGalleryPreview(data.gallery);
     renderStory(data.stories);
     renderNews(data.news);
     renderFooterPrograms(data.programs);

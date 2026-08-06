@@ -14,6 +14,15 @@
     "phone": "+256707915043/+256780504880",
     "email": "siita.nml@gmail.com",
     "donateUrl": "#donate",
+    "mtnNumber": "",
+    "mtnName": "",
+    "airtelNumber": "",
+    "airtelName": "",
+    "bankName": "",
+    "bankAccountName": "",
+    "bankAccountNumber": "",
+    "bankBranch": "",
+    "donateNote": "",
     "footerNote": "Giving Hope. Building Futures.",
     "socialLinks": {
       "facebook": "",
@@ -80,5 +89,6 @@
     }
   ],
   "news": [],
-  "team": []
+  "team": [],
+  "inquiries": []
 }

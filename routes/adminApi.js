@@ -86,6 +86,7 @@ registerCollection('gallery', { defaults: { caption: '' } });
 registerCollection('stories', { defaults: { published: true } });
 registerCollection('news', { defaults: { date: new Date().toISOString() } });
 registerCollection('team');
+registerCollection('inquiries', { defaults: { read: false } });
 
 // ---------- Change password ----------
 router.post('/change-password', express.json(), async (req, res) => {

@@ -24,4 +24,34 @@ router.get('/stories', (req, res) =>
 );
 router.get('/news', (req, res) => res.json(db.get('news').value()));
 
+// ---------- Public inquiry form (Volunteer / Partner With Us / general contact) ----------
+router.post('/inquiries', express.json(), (req, res) => {
+  const { name, email, phone, type, message, website } = req.body || {};
+
+  // Simple honeypot: a hidden field named "website" that real visitors never
+  // fill in — if it has a value, silently pretend success and drop it.
+  if (website) return res.json({ ok: true });
+
+  if (!name || !name.trim()) return res.status(400).json({ error: 'Please enter your name.' });
+  if (!email || !email.trim()) return res.status(400).json({ error: 'Please enter your email.' });
+  if (!message || !message.trim()) return res.status(400).json({ error: 'Please enter a message.' });
+  if (name.length > 200 || email.length > 200 || message.length > 5000) {
+    return res.status(400).json({ error: 'One of the fields is too long.' });
+  }
+
+  const crypto = require('crypto');
+  const item = {
+    id: `inquiries-${crypto.randomBytes(6).toString('hex')}`,
+    createdAt: new Date().toISOString(),
+    read: false,
+    name: name.trim(),
+    email: email.trim(),
+    phone: (phone || '').trim(),
+    type: type || 'General',
+    message: message.trim()
+  };
+  db.get('inquiries').push(item).write();
+  res.status(201).json({ ok: true });
+});
+
 module.exports = router;

@@ -45,6 +45,10 @@ if (mongo.isEnabled()) {
       if (existing) {
         delete existing._id;
         db.setState(existing).write();
+        // Fill in any fields/collections that didn't exist yet when this data
+        // was first saved (e.g. new settings fields or a new collection added
+        // in a later update) without touching anything already saved.
+        db.defaults(defaultData).write();
         console.log('Loaded site content from MongoDB.');
       } else {
         await collection.insertOne({ _id: 'content', ...defaultData });

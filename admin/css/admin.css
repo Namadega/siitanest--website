@@ -66,6 +66,16 @@ a { color: var(--green-700); }
 }
 .sidebar nav a:hover { background: rgba(255,255,255,0.08); }
 .sidebar nav a.active { background: var(--gold-500); color: var(--green-900); font-weight: 700; }
+#inquiries-badge {
+  background: var(--danger);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 10px;
+  margin-left: auto;
+}
+#inquiries-badge:empty { display: none; }
 .sidebar-footer { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.14); }
 .sidebar-footer button {
   width: 100%;

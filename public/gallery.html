@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gallery — Siitanest Mother's Love Home</title>
+<meta name="description" content="Photo gallery — Siitanest Mother's Love Home.">
+<link rel="icon" href="/images/favicon.png.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container">
+    <a href="/#home" class="brand">
+      <img src="/images/logo.svg" alt="">
+      <div>
+        <div class="brand-name" id="brand-name">SIITANEST</div>
+        <div class="brand-sub" id="brand-sub">Mother's Love Home</div>
+      </div>
+    </a>
+    <nav class="main-nav">
+      <a href="/#home">Home</a>
+      <a href="/#about">About Us</a>
+      <a href="/#programs">Programs</a>
+      <a href="/gallery.html">Gallery</a>
+      <a href="/#get-involved">Get Involved</a>
+      <a href="/#news">News</a>
+      <a href="/#contact">Contact</a>
+    </nav>
+    <div class="header-actions">
+      <a class="btn btn-primary" id="header-donate-btn" href="/donate.html">&#10084; Donate</a>
+    </div>
+  </div>
+</header>
+
+<section class="section" style="padding-bottom:24px;">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Gallery</span>
+      <h2>Moments From Our Community</h2>
+    </div>
+    <div class="full-gallery-grid" id="full-gallery-grid"></div>
+  </div>
+</section>
+
+<footer class="site-footer" id="contact">
+  <div class="container footer-grid">
+    <div>
+      <div class="footer-brand">
+        <img src="/images/logo.svg" alt="">
+        <div class="footer-brand-name" id="footer-org-name">SIITANEST</div>
+      </div>
+      <p id="footer-org-sub">Mother's Love Home</p>
+      <p id="footer-note" style="margin-top:10px; opacity:0.75; font-size:13px;">Giving Hope. Building Futures.</p>
+      <div class="social-row" id="social-row"></div>
+    </div>
+    <div>
+      <h5>Quick Links</h5>
+      <ul>
+        <li><a href="/#home">Home</a></li>
+        <li><a href="/#about">About Us</a></li>
+        <li><a href="/#programs">Programs</a></li>
+        <li><a href="/gallery.html">Gallery</a></li>
+        <li><a href="/#get-involved">Get Involved</a></li>
+        <li><a href="/#news">News</a></li>
+        <li><a href="/#contact">Contact Us</a></li>
+      </ul>
+    </div>
+    <div>
+      <h5>Our Programs</h5>
+      <ul id="footer-programs"></ul>
+    </div>
+    <div>
+      <h5>Contact Us</h5>
+      <ul>
+        <li id="footer-address">&#128205;</li>
+        <li id="footer-phone">&#128222;</li>
+        <li id="footer-email">&#9993;</li>
+      </ul>
+    </div>
+    <div>
+      <h5>Newsletter</h5>
+      <p style="font-size:13px;">Subscribe to our newsletter for updates and stories.</p>
+      <form class="newsletter-form" onsubmit="event.preventDefault(); this.reset(); alert('Thanks for subscribing!');">
+        <input type="email" placeholder="Your email address" required>
+        <button type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+  <div class="container footer-bottom" id="footer-bottom">
+    &copy; 2026 Siitanest Mother's Love Home. All Rights Reserved.
+  </div>
+</footer>
+
+<script src="/js/chrome.js"></script>
+<script src="/js/gallery-page.js"></script>
+</body>
+</html>
