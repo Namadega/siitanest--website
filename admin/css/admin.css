@@ -33,7 +33,7 @@ a { color: var(--green-700); }
   box-shadow: 0 20px 60px rgba(0,0,0,0.35);
 }
 .login-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
-.login-brand img { width: 36px; height: 36px; }
+.login-brand img { width: 36px; height: 36px; object-fit: cover; border-radius: 50%; }
 .login-card h1 { font-size: 22px; margin: 0 0 6px; }
 .login-card label { display: block; font-size: 13px; font-weight: 600; margin: 16px 0 6px; }
 .login-card input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; }
@@ -53,7 +53,7 @@ a { color: var(--green-700); }
   overflow-y: auto;
 }
 .sidebar-brand { display: flex; align-items: center; gap: 10px; padding: 0 8px 20px; }
-.sidebar-brand img { width: 30px; height: 30px; }
+.sidebar-brand img { width: 30px; height: 30px; object-fit: cover; border-radius: 50%; }
 .sidebar-brand strong { font-size: 15px; }
 .sidebar nav a {
   display: flex; align-items: center; gap: 10px;
