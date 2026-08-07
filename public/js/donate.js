@@ -80,4 +80,74 @@ function renderDonateMethods(settings) {
   } catch (err) {
     console.error(err);
   }
+
+  initAmountSelector();
+  document.getElementById('donation-form').addEventListener('submit', handleDonationFormSubmit);
 })();
+
+function initAmountSelector() {
+  const buttons = document.querySelectorAll('.amount-btn');
+  const amountInput = document.getElementById('d-amount');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      buttons.forEach((b) => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const amount = btn.dataset.amount;
+      amountInput.value = amount === 'Other' ? '' : `UGX ${amount}`;
+      if (amount === 'Other') amountInput.focus();
+      document.getElementById('donation-form').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+}
+
+function showDonationFormStatus(message, isError) {
+  const el = document.getElementById('donation-form-status');
+  el.className = isError ? 'form-error' : 'form-success';
+  el.textContent = message;
+}
+
+async function handleDonationFormSubmit(e) {
+  e.preventDefault();
+  const form = e.target;
+  const submitBtn = document.getElementById('donation-form-submit');
+  const statusEl = document.getElementById('donation-form-status');
+  statusEl.className = '';
+  statusEl.textContent = '';
+
+  const amount = form.amount.value.trim();
+  const method = form.method.value;
+  const extraMessage = form.message.value.trim();
+  const combinedMessage = [
+    `Donation notification — Amount: ${amount || 'not specified'}, Method: ${method}`,
+    extraMessage ? `Note: ${extraMessage}` : ''
+  ].filter(Boolean).join('\n');
+
+  const payload = {
+    name: form.name.value.trim(),
+    email: form.email.value.trim(),
+    phone: form.phone.value.trim(),
+    type: 'Donation',
+    message: combinedMessage,
+    website: form.website.value // honeypot
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+  try {
+    const res = await fetch('/api/inquiries', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+    form.reset();
+    document.querySelectorAll('.amount-btn').forEach((b) => b.classList.remove('selected'));
+    showDonationFormStatus("Thank you so much! We've received your notification and will follow up to confirm and thank you personally.", false);
+  } catch (err) {
+    showDonationFormStatus(err.message, true);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '&#10084; I&#39;ve Made My Donation';
+  }
+}

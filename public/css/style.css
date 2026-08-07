@@ -369,6 +369,21 @@ button { font-family: inherit; cursor: pointer; }
 }
 .copy-btn:hover { background: var(--gold-500); }
 
+.amount-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.amount-btn {
+  padding: 14px 8px;
+  border: 2px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-sm);
+  background: var(--cream-100);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-900);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.amount-btn:hover { border-color: var(--gold-500); }
+.amount-btn.selected { border-color: var(--green-700); background: var(--green-700); color: var(--white); }
+
 /* Full gallery page */
 .full-gallery-grid {
   display: grid;
@@ -430,4 +445,5 @@ button { font-family: inherit; cursor: pointer; }
   .footer-grid { grid-template-columns: 1fr; }
   .gallery-mini-grid { grid-template-columns: repeat(3, 1fr); }
   .full-gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .amount-grid { grid-template-columns: repeat(2, 1fr); }
 }

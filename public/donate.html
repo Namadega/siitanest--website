@@ -46,9 +46,81 @@
   </div>
 </section>
 
+<section class="section" style="padding-top:0; padding-bottom:8px;">
+  <div class="container" style="max-width:720px;">
+    <div class="donate-method">
+      <h3><span class="method-icon">1</span> Choose an amount</h3>
+      <p style="color:var(--ink-600); font-size:14px; margin-bottom:14px;">This just helps you decide — any amount is welcome, and every shilling reaches a child in our care.</p>
+      <div class="amount-grid" id="amount-grid">
+        <button type="button" class="amount-btn" data-amount="50,000">UGX 50,000</button>
+        <button type="button" class="amount-btn" data-amount="100,000">UGX 100,000</button>
+        <button type="button" class="amount-btn" data-amount="200,000">UGX 200,000</button>
+        <button type="button" class="amount-btn" data-amount="Other">Other amount</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:20px; padding-bottom:12px;">
+  <div class="container" style="max-width:720px;">
+    <div class="donate-method">
+      <h3><span class="method-icon">2</span> Send your gift</h3>
+      <p style="color:var(--ink-600); font-size:14px; margin-bottom:0;">Use any of the methods below from your own banking or mobile money app. <strong>Please use your name as the transfer reference</strong> so we can properly thank you.</p>
+    </div>
+  </div>
+</section>
+
 <section class="section" style="padding-top:0;">
   <div class="container" style="max-width:720px; display:flex; flex-direction:column; gap:20px;" id="donate-methods">
     <!-- populated by donate.js -->
+  </div>
+</section>
+
+<section class="section" style="padding-top:8px;">
+  <div class="container" style="max-width:720px;">
+    <div class="donate-method">
+      <h3><span class="method-icon">3</span> Let us know</h3>
+      <p style="color:var(--ink-600); font-size:14px; margin-bottom:16px;">
+        Once you've sent your gift, tell us below — we'll follow up personally to thank you and confirm receipt.
+      </p>
+      <form class="contact-form" id="donation-form">
+        <div>
+          <label for="d-name">Your Name</label>
+          <input type="text" id="d-name" name="name" required>
+        </div>
+        <div>
+          <label for="d-email">Email</label>
+          <input type="email" id="d-email" name="email" required>
+        </div>
+        <div>
+          <label for="d-phone">Phone (optional)</label>
+          <input type="tel" id="d-phone" name="phone">
+        </div>
+        <div>
+          <label for="d-amount">Amount Sent</label>
+          <input type="text" id="d-amount" name="amount" placeholder="e.g. UGX 100,000">
+        </div>
+        <div>
+          <label for="d-method">Method Used</label>
+          <select id="d-method" name="method">
+            <option value="MTN Mobile Money">MTN Mobile Money</option>
+            <option value="Airtel Money">Airtel Money</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label for="d-message">Message (optional)</label>
+          <textarea id="d-message" name="message" placeholder="Anything you'd like us to know..."></textarea>
+        </div>
+        <div class="hp-field" aria-hidden="true">
+          <label for="d-website">Website</label>
+          <input type="text" id="d-website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+        <div id="donation-form-status"></div>
+        <button type="submit" class="btn btn-primary" id="donation-form-submit" style="align-self:flex-start;">&#10084; I've Made My Donation</button>
+      </form>
+    </div>
   </div>
 </section>
 
