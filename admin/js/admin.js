@@ -82,6 +82,7 @@ async function loadSettings() {
   $('s-orgTagline').value = s.orgTagline || '';
   $('s-heroHeadline').value = s.heroHeadline || '';
   $('s-heroSubtext').value = s.heroSubtext || '';
+  $('s-heroVideoUrl').value = s.heroVideoUrl || '';
   $('s-aboutTitle').value = s.aboutTitle || '';
   $('s-aboutText').value = s.aboutText || '';
   $('s-missionText').value = s.missionText || '';
@@ -122,6 +123,7 @@ async function saveSettings() {
       orgTagline: $('s-orgTagline').value.trim(),
       heroHeadline: $('s-heroHeadline').value.trim(),
       heroSubtext: $('s-heroSubtext').value.trim(),
+      heroVideoUrl: $('s-heroVideoUrl').value.trim(),
       aboutTitle: $('s-aboutTitle').value.trim(),
       aboutText: $('s-aboutText').value.trim(),
       missionText: $('s-missionText').value.trim(),

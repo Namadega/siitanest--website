@@ -8,6 +8,13 @@ const SOCIAL_ICONS = {
   youtube: '&#9654;'
 };
 
+const STAT_ICONS = {
+  children: '&#128118;',
+  family: '&#128106;',
+  graduate: '&#127891;',
+  hands: '&#129309;'
+};
+
 function escapeHtml(str) {
   if (str == null) return '';
   return String(str)
@@ -73,4 +80,34 @@ function renderFooterPrograms(programs) {
   if (!el) return;
   if (!programs || !programs.length) { el.innerHTML = ''; return; }
   el.innerHTML = programs.map((p) => `<li><a href="/#programs">${escapeHtml(p.title)}</a></li>`).join('');
+}
+
+// Slim bar fixed to the bottom of the viewport on every page, showing the
+// four impact stats (Children Supported, Families Assisted, etc.).
+function renderFloatingStats(stats) {
+  const el = document.getElementById('floating-stats');
+  if (!el) return;
+  if (!stats || !stats.length) { el.innerHTML = ''; return; }
+  el.innerHTML = stats
+    .map(
+      (s) => `
+    <div class="fs-item">
+      <span class="fs-icon">${STAT_ICONS[s.icon] || '&#11088;'}</span>
+      <span class="fs-value">${escapeHtml(s.value)}</span>
+      <span class="fs-label">${escapeHtml(s.label)}</span>
+    </div>`
+    )
+    .join('');
+}
+
+// Call this from every page's init — fetches stats once and renders the
+// floating bar, independent of whatever else that page loads.
+async function initFloatingStats() {
+  try {
+    const res = await fetch('/api/stats');
+    if (!res.ok) return;
+    renderFloatingStats(await res.json());
+  } catch (err) {
+    console.error(err);
+  }
 }

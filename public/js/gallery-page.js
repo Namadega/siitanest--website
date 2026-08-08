@@ -43,4 +43,5 @@ function renderFullGallery(gallery) {
   } catch (err) {
     console.error(err);
   }
+  initFloatingStats();
 })();

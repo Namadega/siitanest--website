@@ -1,16 +1,6 @@
 // Homepage-specific rendering. Shared header/footer logic lives in chrome.js
 // (loaded before this file) — escapeHtml, formatDate, renderChrome(), etc.
 
-const ICONS = {
-  children: '&#128118;',
-  family: '&#128106;',
-  graduate: '&#127891;',
-  hands: '&#129309;',
-  bowl: '&#127858;',
-  home: '&#127968;',
-  'heart-pulse': '&#128147;'
-};
-
 // Clean line-style SVG icons for the Programs cards (education/nutrition/
 // shelter/healthcare) — used instead of emoji for a more professional look.
 const PROGRAM_ICONS = {
@@ -42,19 +32,41 @@ function renderHomepageSettings(settings) {
   document.getElementById('vision-text').textContent = settings.visionText || '';
 }
 
-function renderStats(stats) {
-  const el = document.getElementById('stats-bar');
-  if (!stats || !stats.length) { el.innerHTML = ''; return; }
-  el.innerHTML = stats
-    .map(
-      (s) => `
-    <div class="stat">
-      <div class="stat-icon">${ICONS[s.icon] || '&#11088;'}</div>
-      <div class="stat-value">${escapeHtml(s.value)}</div>
-      <div class="stat-label">${escapeHtml(s.label)}</div>
-    </div>`
-    )
-    .join('');
+// Turns a plain video file URL or a YouTube/Vimeo link into the right embed.
+function renderHeroVideo(url) {
+  const wrap = document.getElementById('hero-video-wrap');
+  if (!wrap) return;
+
+  if (!url) {
+    wrap.innerHTML = '<p class="empty-note">A video will appear here once added in the admin panel.</p>';
+    return;
+  }
+
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+
+  if (ytMatch) {
+    wrap.innerHTML = `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  } else if (vimeoMatch) {
+    wrap.innerHTML = `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" title="Video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+  } else {
+    wrap.innerHTML = `<div class="video-embed"><video id="hero-video-el" src="${escapeHtml(url)}" muted loop playsinline controls preload="metadata"></video></div>`;
+    // Play automatically only while it's actually visible on screen; pause
+    // once scrolled away, so it doesn't keep playing off-screen.
+    const videoEl = document.getElementById('hero-video-el');
+    if (videoEl && 'IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) videoEl.play().catch(() => {});
+            else videoEl.pause();
+          });
+        },
+        { threshold: 0.4 }
+      );
+      observer.observe(videoEl);
+    }
+  }
 }
 
 function renderPrograms(programs) {
@@ -126,7 +138,7 @@ function renderNews(news) {
     const data = await loadSiteData();
     renderChrome(data.settings);
     renderHomepageSettings(data.settings);
-    renderStats(data.stats);
+    renderHeroVideo(data.settings.heroVideoUrl);
     renderPrograms(data.programs);
     renderGalleryPreview(data.gallery);
     renderStory(data.stories);
@@ -135,4 +147,5 @@ function renderNews(news) {
   } catch (err) {
     console.error(err);
   }
+  initFloatingStats();
 })();

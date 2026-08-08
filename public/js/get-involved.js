@@ -61,4 +61,5 @@ async function handleSubmit(e) {
   } catch (err) {
     console.error(err);
   }
+  initFloatingStats();
 })();

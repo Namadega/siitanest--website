@@ -81,6 +81,7 @@ function renderDonateMethods(settings) {
     console.error(err);
   }
 
+  initFloatingStats();
   initAmountSelector();
   document.getElementById('donation-form').addEventListener('submit', handleDonationFormSubmit);
 })();
