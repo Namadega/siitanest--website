@@ -60,9 +60,18 @@
 
       <div class="card">
         <h3>"See Our Work" Video</h3>
-        <p class="muted" style="margin-top:-8px; margin-bottom:14px;">Shown in the "A Look Inside Siitanest" section on the homepage. Paste a YouTube link, a Vimeo link, or a direct link to a video file (.mp4). Leave blank to show a placeholder until you add one.</p>
+        <p class="muted" style="margin-top:-8px; margin-bottom:14px;">Shown in the "A Look Inside Siitanest" section on the homepage. Plays automatically and silently for visitors — no play button, no link to any outside site. Upload a short clip (MP4, WEBM, or MOV, up to 15MB — a few seconds to about 20 seconds of compressed footage works best). Leave empty to show a placeholder until you add one.</p>
         <div class="form-grid single">
-          <div class="field"><label>Video link</label><input id="s-heroVideoUrl" placeholder="https://youtube.com/watch?v=... or https://example.com/video.mp4"></div>
+          <div class="field">
+            <label>Video file</label>
+            <div class="image-upload">
+              <video id="s-heroVideo-preview" muted loop playsinline style="width:100px; height:60px; border-radius:8px; background:#12271a; border:1px dashed var(--border); flex-shrink:0; object-fit:cover;"></video>
+              <div>
+                <input type="file" accept="video/mp4,video/webm,video/quicktime" id="s-heroVideo-file">
+                <div class="upload-status" id="s-heroVideo-status"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

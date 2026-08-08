@@ -22,8 +22,25 @@ const upload = multer({
   limits: { fileSize: 8 * 1024 * 1024 } // 8MB
 });
 
+// Separate config for the background video upload: different allowed types
+// and a larger size limit, but still capped to keep it a genuinely "short
+// clip" rather than a full-length video (also keeps it well under MongoDB's
+// 16MB single-document limit when stored there).
+const ALLOWED_VIDEO_MIME = new Set(['video/mp4', 'video/webm', 'video/quicktime']);
+function videoFileFilter(req, file, cb) {
+  if (!ALLOWED_VIDEO_MIME.has(file.mimetype)) {
+    return cb(new Error('Only MP4, WEBM, or MOV video files are allowed'));
+  }
+  cb(null, true);
+}
+const uploadVideo = multer({
+  storage,
+  fileFilter: videoFileFilter,
+  limits: { fileSize: 15 * 1024 * 1024 } // 15MB — keep it short (a few seconds to ~20s of compressed footage)
+});
+
 function randomName() {
   return crypto.randomBytes(12).toString('hex');
 }
 
-module.exports = { upload, randomName };
+module.exports = { upload, uploadVideo, randomName };

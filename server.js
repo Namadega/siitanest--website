@@ -17,7 +17,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Ensure upload directories exist even on a fresh clone.
-['gallery', 'stories', 'news', 'programs', 'misc'].forEach((folder) => {
+['gallery', 'stories', 'news', 'programs', 'misc', 'videos'].forEach((folder) => {
   fs.mkdirSync(path.join(__dirname, 'uploads', folder), { recursive: true });
 });
 
@@ -41,11 +41,33 @@ app.use(
 app.get('/uploads/:folder/:filename', async (req, res, next) => {
   if (!mongo.isEnabled()) return next();
   try {
-    const img = await imageStore.getImage(req.params.folder, req.params.filename);
-    if (!img) return next();
-    res.setHeader('Content-Type', img.contentType);
+    const media = await imageStore.getImage(req.params.folder, req.params.filename);
+    if (!media) return next();
+
+    // Videos need HTTP Range support so browsers (especially mobile Safari)
+    // can start playback without downloading the whole file first, and so
+    // seeking works. Images are small enough to just send in full.
+    if (media.contentType.startsWith('video/') && req.headers.range) {
+      const total = media.buffer.length;
+      const match = req.headers.range.match(/bytes=(\d*)-(\d*)/);
+      const start = match && match[1] ? parseInt(match[1], 10) : 0;
+      const end = match && match[2] ? parseInt(match[2], 10) : total - 1;
+      const chunk = media.buffer.subarray(start, end + 1);
+
+      res.writeHead(206, {
+        'Content-Range': `bytes ${start}-${end}/${total}`,
+        'Accept-Ranges': 'bytes',
+        'Content-Length': chunk.length,
+        'Content-Type': media.contentType,
+        'Cache-Control': 'public, max-age=31536000, immutable'
+      });
+      return res.end(chunk);
+    }
+
+    res.setHeader('Content-Type', media.contentType);
+    res.setHeader('Accept-Ranges', 'bytes');
     res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-    res.send(img.buffer);
+    res.send(media.buffer);
   } catch (err) {
     next(err);
   }
@@ -74,10 +96,15 @@ app.use('/api/admin', requireAuth, adminApiRoutes);
 app.use((err, req, res, next) => {
   if (res.headersSent) return next(err);
   console.error(err);
-  const status = err.status || (err.message && err.message.includes('Only JPG') ? 400 : 500);
-  res.status(status).json({
-    error: err.message || 'Something went wrong on the server. Please try again.'
-  });
+  const isClientError =
+    err.code === 'LIMIT_FILE_SIZE' ||
+    (err.message && (err.message.includes('Only JPG') || err.message.includes('Only MP4')));
+  const status = err.status || (isClientError ? 400 : 500);
+  const message =
+    err.code === 'LIMIT_FILE_SIZE'
+      ? 'That file is too large. Please use a smaller file.'
+      : err.message || 'Something went wrong on the server. Please try again.';
+  res.status(status).json({ error: message });
 });
 
 // Last-resort safety net: if anything anywhere throws an unhandled promise

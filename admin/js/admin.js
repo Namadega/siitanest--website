@@ -53,6 +53,25 @@ async function uploadImage(fileInput, folder, previewEl, statusEl) {
   }
 }
 
+// Uploads a background video and returns its public URL, previewing it inline.
+async function uploadVideo(fileInput, previewEl, statusEl) {
+  const file = fileInput.files[0];
+  if (!file) return null;
+  statusEl.textContent = 'Uploading… (this may take a moment)';
+  const formData = new FormData();
+  formData.append('video', file);
+  try {
+    const data = await api('/api/admin/upload-video', { method: 'POST', body: formData });
+    if (previewEl) { previewEl.src = data.url; previewEl.play().catch(() => {}); }
+    statusEl.textContent = 'Uploaded ✓';
+    return data.url;
+  } catch (err) {
+    statusEl.textContent = '';
+    toast(err.message, true);
+    return null;
+  }
+}
+
 // ---------- Navigation ----------
 function initNav() {
   const links = document.querySelectorAll('#side-nav a[data-panel]');
@@ -82,7 +101,6 @@ async function loadSettings() {
   $('s-orgTagline').value = s.orgTagline || '';
   $('s-heroHeadline').value = s.heroHeadline || '';
   $('s-heroSubtext').value = s.heroSubtext || '';
-  $('s-heroVideoUrl').value = s.heroVideoUrl || '';
   $('s-aboutTitle').value = s.aboutTitle || '';
   $('s-aboutText').value = s.aboutText || '';
   $('s-missionText').value = s.missionText || '';
@@ -109,6 +127,7 @@ async function loadSettings() {
 
   if (s.heroImage) $('s-heroImage-preview').style.backgroundImage = `url('${s.heroImage}')`;
   if (s.aboutImage) $('s-aboutImage-preview').style.backgroundImage = `url('${s.aboutImage}')`;
+  if (s.heroVideoUrl) $('s-heroVideo-preview').src = s.heroVideoUrl;
 }
 
 async function saveSettings() {
@@ -117,13 +136,13 @@ async function saveSettings() {
   try {
     const heroImageUrl = await uploadImage($('s-heroImage-file'), 'misc', $('s-heroImage-preview'), $('s-heroImage-status'));
     const aboutImageUrl = await uploadImage($('s-aboutImage-file'), 'misc', $('s-aboutImage-preview'), $('s-aboutImage-status'));
+    const heroVideoUrl = await uploadVideo($('s-heroVideo-file'), $('s-heroVideo-preview'), $('s-heroVideo-status'));
 
     const payload = {
       orgName: $('s-orgName').value.trim(),
       orgTagline: $('s-orgTagline').value.trim(),
       heroHeadline: $('s-heroHeadline').value.trim(),
       heroSubtext: $('s-heroSubtext').value.trim(),
-      heroVideoUrl: $('s-heroVideoUrl').value.trim(),
       aboutTitle: $('s-aboutTitle').value.trim(),
       aboutText: $('s-aboutText').value.trim(),
       missionText: $('s-missionText').value.trim(),
@@ -151,6 +170,7 @@ async function saveSettings() {
     };
     if (heroImageUrl) payload.heroImage = heroImageUrl;
     if (aboutImageUrl) payload.aboutImage = aboutImageUrl;
+    if (heroVideoUrl) payload.heroVideoUrl = heroVideoUrl;
 
     currentSettings = await api('/api/admin/settings', { method: 'PUT', body: JSON.stringify(payload) });
     toast('Site info saved.');

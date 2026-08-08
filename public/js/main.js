@@ -33,6 +33,9 @@ function renderHomepageSettings(settings) {
 }
 
 // Turns a plain video file URL or a YouTube/Vimeo link into the right embed.
+// The hero video is always our own uploaded file (no YouTube/Vimeo — nothing
+// links away from the page). It plays silently and automatically with no
+// controls; visitors can't pause it, seek it, or click through anywhere.
 function renderHeroVideo(url) {
   const wrap = document.getElementById('hero-video-wrap');
   if (!wrap) return;
@@ -42,30 +45,25 @@ function renderHeroVideo(url) {
     return;
   }
 
-  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
-  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  wrap.innerHTML = `<div class="video-embed"><video id="hero-video-el" src="${escapeHtml(url)}" muted loop playsinline autoplay preload="auto" disablepictureinpicture disableremoteplayback></video></div>`;
 
-  if (ytMatch) {
-    wrap.innerHTML = `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${ytMatch[1]}" title="Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
-  } else if (vimeoMatch) {
-    wrap.innerHTML = `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${vimeoMatch[1]}" title="Video" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
-  } else {
-    wrap.innerHTML = `<div class="video-embed"><video id="hero-video-el" src="${escapeHtml(url)}" muted loop playsinline controls preload="metadata"></video></div>`;
-    // Play automatically only while it's actually visible on screen; pause
-    // once scrolled away, so it doesn't keep playing off-screen.
-    const videoEl = document.getElementById('hero-video-el');
-    if (videoEl && 'IntersectionObserver' in window) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) videoEl.play().catch(() => {});
-            else videoEl.pause();
-          });
-        },
-        { threshold: 0.4 }
-      );
-      observer.observe(videoEl);
-    }
+  // Play automatically as soon as it's visible on screen, pause once
+  // scrolled away (saves bandwidth/battery) — resumes automatically when
+  // scrolled back into view. No user interaction involved either way.
+  const videoEl = document.getElementById('hero-video-el');
+  if (videoEl && 'IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) videoEl.play().catch(() => {});
+          else videoEl.pause();
+        });
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(videoEl);
+  } else if (videoEl) {
+    videoEl.play().catch(() => {});
   }
 }
 

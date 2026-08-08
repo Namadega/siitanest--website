@@ -3,11 +3,12 @@ const router = express.Router();
 const crypto = require('crypto');
 const sharp = require('sharp');
 const db = require('../utils/db');
-const { upload } = require('../middleware/upload');
+const { upload, uploadVideo } = require('../middleware/upload');
 const { changePassword, readAdmin } = require('../utils/adminStore');
 const imageStore = require('../utils/imageStore');
 
 const ALLOWED_FOLDERS = new Set(['gallery', 'stories', 'news', 'programs', 'misc']);
+const VIDEO_EXTENSION = { 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' };
 
 // ---------- Image upload ----------
 // POST /api/admin/upload?folder=gallery   (multipart field name: "image")
@@ -30,6 +31,33 @@ router.post('/upload', upload.single('image'), async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Image upload failed. Please try a different image.' });
+  }
+});
+
+// ---------- Background video upload (the "See Our Work" homepage clip) ----------
+// POST /api/admin/upload-video   (multipart field name: "video")
+router.post('/upload-video', uploadVideo.single('video'), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No video file received.' });
+
+    const ext = VIDEO_EXTENSION[req.file.mimetype] || 'mp4';
+    const filename = `${crypto.randomBytes(12).toString('hex')}.${ext}`;
+
+    // Videos are stored as-is (no re-encoding, unlike images) — just saved
+    // and served back exactly as uploaded.
+    const oldUrl = db.get('settings').value().heroVideoUrl;
+    const url = await imageStore.saveImage('videos', filename, req.file.buffer, req.file.mimetype);
+
+    // Clean up the previous video, if there was one and it was an upload
+    // of ours (not a leftover external link from before this feature).
+    if (oldUrl && oldUrl.startsWith('/uploads/videos/')) {
+      await imageStore.deleteImage(oldUrl);
+    }
+
+    res.json({ url });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Video upload failed. Please try a shorter or smaller video file.' });
   }
 });
 
